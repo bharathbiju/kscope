@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_tts/flutter_tts.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -24,9 +26,15 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   static const String id = "HOMESCREEN";
+  final FlutterTts flutterTts = FlutterTts();
 
   @override
   Widget build(BuildContext context) {
+
+
+                Future _speak( text ) async{
+                  await FlutterTts().speak(text);
+                }
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -63,6 +71,7 @@ class MyHomePage extends StatelessWidget {
           CustomButton(
             text: "Log In",
             callback: () {
+              _speak("takku nu Login pannuda en challa kutti");
               Navigator.of(context).pushNamed(Login.id);
             },
           ),
@@ -73,13 +82,16 @@ class MyHomePage extends StatelessWidget {
           CustomButton(
             text: "Register",
             callback: () {
+              _speak("Ennuma ni Register pannala");
               Navigator.of(context).pushNamed(Registration.id);
             },
-          )
-        ],
-      ),
-    );
-  }
+          ),
+                      ],
+                    ),
+                  );
+                }
+              
+              
 }
 
 class CustomButton extends StatelessWidget {
@@ -192,6 +204,7 @@ class _LoginState extends State<Login> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> loginUser() async {
+    
     FirebaseUser user = (await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
@@ -244,6 +257,7 @@ class _LoginState extends State<Login> {
           CustomButton(
             text: "Log In",
             callback: () async {
+             
               await loginUser();
             },
           )
@@ -321,7 +335,6 @@ class _ChatState extends State<Chat> {
 
                   List<Widget> messages = docs
                       .map((doc) => Message(
-                            date:doc.data['date'],
                             from: doc.data['from'],
                             text: doc.data['text'],
                             me: widget.user.email == doc.data['from'],
@@ -386,12 +399,11 @@ class SendButton extends StatelessWidget {
 class Message extends StatelessWidget {
   final String from;
   final String text;
-  final String date;
 
 
   final bool me;
 
-  const Message({Key key, this.from, this.text, this.me,this.date}) : super(key: key);
+  const Message({Key key, this.from, this.text, this.me}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
